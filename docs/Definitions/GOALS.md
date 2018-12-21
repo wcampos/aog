@@ -1,8 +1,8 @@
 # Goal 
 
-The main goal is to develop a suite that uses sshguardjs as a mechanism to analyse incomming traffic and block offending sources IPs initialy in AWS using SecurityGroups or NACLs 
+The main goal is to develop a suite that uses sshd auth logs as a mechanism to analyse incomming traffic and block offending sources IPs initialy in AWS using SecurityGroups
 
-The traffic should be analyse from ELB,ALB,NLB or any publicaly expose device 
+The traffic should be analyse from ELB, ALB ,NLB or any publicly exposed device 
 
 ## Information Dashboard 
 
