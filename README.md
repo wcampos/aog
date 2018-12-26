@@ -24,10 +24,11 @@ This is the input of data to our platform. An outter layer provides:
 
 - An event arrives as the body of an HTTP request.
 - The data is recorded with the following data:
--- The source IP of the event.
--- The date of the event.
--- The IP of the load balancer that received the event.
--- The destination `Host:` header of the request.
+
+  - The source IP of the event.
+  - The date of the event.
+  - The IP of the load balancer that received the event.
+  - The destination `Host:` header of the request.
 - The API keys are validated.
 - Throttling is enforced.
 - The enriched event is sent to S3 or an object storage.
