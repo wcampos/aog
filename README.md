@@ -35,17 +35,76 @@ This is the input of data to our platform. An outter layer provides:
 - The enriched event is also sent to a NATS queue depending on the destination `Host:` header of the request.
 
 ### Event categorizer
+
 For the catch-all input ingress, the event is analyzed and matched against known event types (sshd, http).
 When the event is recognized as a specific type it is sent to that queue's specific type.
 Q: If the event data matches several possible protocol types, Should we match once or match several times?
 
 ### SSHD microservice 
 Listens to the `sshd_raw` input topic.
-- The event is filtered for SSH auth failure (Initially only password, later on add pre-auth and other block types).
+- The event is filtered for SSH auth failure (Initially only password, later on add pre-auth and other attempt types).
 - The event is transformed to a versioned JSON type
 - The JSON event is sent to a `sshd_json` NATS queue
 Q: How do we handle different versions of SSH that change logs over time?
 
 
+Example:
+Raw log from sshd:
+`# systemctl status sshd
+#[...]
+Dec 29 17:21:44 archlinux sshd[29778]: Failed password for invalid user postgres from WW.XX.YY.ZZ port 33312 ssh2`
+
+- The event is sent to the ssh endpoint. It is received as the body of the HTTP request:
+`Dec 29 17:21:44 archlinux sshd[29778]: Failed password for invalid user postgres from WW.XX.YY.ZZ port 33312 ssh2`
+
+- The ssh endpoint checks the data and sends it to the `sshd_raw` topic:
+```json
+{
+  "receive_time": "<some time>",
+  "source_ip": "<some ip>",
+  "destination_host": "sshd.<some-domain>",
+  "record_id": "XXX",
+  "raw_line": "Dec 29 17:21:44 archlinux sshd[29778]: Failed password for invalid user postgres from WW.XX.YY.ZZ port 33312 ssh2`
+",
+  "other_metadata":"...",
+  "process_trail":[
+     {
+       "id": "sshd_raw_receiver-<kubectl replica id>",
+       "processing_time": "<some time>",
+       "version": "X.Y.Z"
+     }
+  ],
+}
+```
+
+- The `sshd_raw` topic is read by the sshd microservice, it is enriched and sent to `sshd_json` topic as:
+```json
+{
+  "receive_time": "<some time>",
+  "source_ip": "<some ip>",
+  "destination_host": "sshd.<some-domain>",
+  "record_id": "XXX",
+  "raw_line": "Dec 29 17:21:44 archlinux sshd[29778]: Failed password for invalid user postgres from WW.XX.YY.ZZ port 33312 ssh2`
+",
+  "event_data": {
+    "sshd_auth_type": "password",
+    "target_user": "postgres",
+    "sshd_auth_failure_type": "password",
+    "event_time": "2018-12-29 17:21:44",
+  },
+  "is_valid": true,
+  "process_trail":[
+     {
+       "id": "sshd_raw_receiver-<kubectl replica id>",
+       "processing_time": "<some time>",
+       "version": "X.Y.Z"
+     },
+     {
+       "id": "sshd_raw_processor-<kubectl replica id>",
+       "processing_time": "<some time>",
+       "version": "X.Y.Z"
+     }
+  ],
+}
+```
 ... TBC ...
-Examples
