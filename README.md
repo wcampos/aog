@@ -2,7 +2,7 @@
 
 AoG provides a real-time and historic dashboard of attacks of different sources.
 Machine Learning is applied to the incoming events to analyze trends/groups.
-This is an event based lambda architecture where raw events are stored permanently for self-healing purposes.
+This is an event based lambda architecture where raw events are stored permanently for self-healing purposes, preferably in infrequent access S3 prefixes.
 
 ## Background
 Events arrive raw, they are enriched with the source of the data, the time of receipt.
@@ -127,6 +127,7 @@ Dec 29 17:21:44 archlinux sshd[29778]: Failed password for invalid user postgres
     - may be used to identify network ranges ?
     - when booting it needs a way to get a concise cache of attacks
     - groups events into specific security groups based on the `event_type` and XXX
+    - Create iptables-like blackholes so that repeated attacks are forwarded to a honey-pot to maintain a list of active attacks (Or should this be a separate microservice?)
 ```json
 ```
 ... TBC ...
