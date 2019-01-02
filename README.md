@@ -132,3 +132,22 @@ Dec 29 17:21:44 archlinux sshd[29778]: Failed password for invalid user postgres
 ```json
 ```
 ... TBC ...
+
+
+##  Architecture
+
+#### Flow 
+- Events comes in ELB
+- Event Payload Converter triggers standardize the payload and push into Cache 
+- Event Classifier gets triggered and Stores work on MQ and S3 
+- Worker actions and Stores counter in DB and MQ
+- Actionner makes changes to AWS to send manage events to other integrations 
+
+- UI displays dashboard and data 
+- DB stores Data for UI
+- Requires Authentication Module 
+
+Recovery of event
+- Recovery Modules will take events to recover from S3 and reprocess when required 
+
+![Workflow](./images/diagram1.png)
