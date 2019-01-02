@@ -127,7 +127,8 @@ Dec 29 17:21:44 archlinux sshd[29778]: Failed password for invalid user postgres
     - may be used to identify network ranges ?
     - when booting it needs a way to get a concise cache of attacks
     - groups events into specific security groups based on the `event_type` and XXX
-    - Create iptables-like blackholes so that repeated attacks are forwarded to a honey-pot to maintain a list of active attacks (Or should this be a separate microservice?)
+  - The `blackhole` microservice:
+    - Repeated attacks are forwarded to a honey-pot to maintain a list of active attacks, following the model of kube-proxy, this keeps the active IPs blocked, this could also mean that our "honey-pot" is smart enough that it can return the same error (including protocol/etc) so that different attempts return the same response (tcpdump?)
 ```json
 ```
 ... TBC ...
